@@ -30,16 +30,18 @@ function createScene(scene) {
 		window.car = object;
 
 		object.scale.set(0.4, 0.4, 0.4)
-		object.position.z = -30;
+		object.position.z = 10;
+		object.position.y = 0;
 
-		object.rotation.z = Math.PI;
-		object.rotation.x = Math.PI/4;
+		// object.rotation.z = Math.PI;
+		// object.rotation.x = Math.PI/4;
+		object.rotation.x = Math.PI/2;
 
 		setInterval(function() {
 			// object.rotation.y += 0.01;
 		}, 0);
 
-		object.rotation.x += 10;
+		// object.rotation.x += 10;
 		var bbox = new THREE.Box3().setFromObject(object);
 		console.log(bbox);
 
