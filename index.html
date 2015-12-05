@@ -14,6 +14,7 @@
     <script src="./leia/LeiaCore.js"></script>
     <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_regular.typeface.js"></script>
     <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_bold.typeface.js"></script>
+    <script src="./src/scene.js"></script>
 
 </head>
 <body style="margin: 0 0 0 0;"></body>
@@ -27,15 +28,12 @@
         // Connect LeiaRenderer To The Page
         document.body.appendChild(leiaRenderer.renderer.domElement);
 
-        // Generate A Cube
-        var boxGeometry = new THREE.BoxGeometry(3, 3, 3);
-        var greenMaterial = new THREE.MeshBasicMaterial( { color: 0xff00ff } );
-        var cube = new THREE.Mesh(boxGeometry, greenMaterial);
+        createScene(scene);
 
-        // Add The Cube To The Scene
-        scene.add(cube);
+        var render = function () {
+            requestAnimationFrame( render );
+            leiaRenderer.render(scene, leiaHoloScreen);
+        };
 
-        // Render The Scene
-        leiaRenderer.render(scene, leiaHoloScreen);
     </script>
 </html>
