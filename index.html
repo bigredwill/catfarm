@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Leia Four Shape Scene Example</title>
+    <style type="text/css">
+    body {
+        overflow: hidden;
+    }
+    </style>
+    <script src="https://www.leiainc.com/build/LeiaCore-latest.min.js"></script>
+    <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_regular.typeface.js"></script>
+    <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_bold.typeface.js"></script>
+
+</head>
+<body style="margin: 0 0 0 0;"></body>
+    <script>
+        // Build The LeiaCore Objects
+        var leiaDisplayInfo = new LeiaDisplayInfo('https://www.leiainc.com/build/LeiaCore/config/displayPrototypeSmall.json');
+        var leiaHoloScreen  = new LeiaHoloScreen();
+        var leiaRenderer    = new LeiaRenderer(leiaHoloScreen);
+        var scene = new THREE.Scene();
+
+        // Connect LeiaRenderer To The Page
+        document.body.appendChild(leiaRenderer.renderer.domElement);
+
+        // Generate A Cube
+        var boxGeometry = new THREE.BoxGeometry(3, 3, 3);
+        var greenMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        var cube = new THREE.Mesh(boxGeometry, greenMaterial);
+
+        // Add The Cube To The Scene
+        scene.add(cube);
+
+        // Render The Scene
+        leiaRenderer.render(scene, leiaHoloScreen);
+    </script>
+</html>
