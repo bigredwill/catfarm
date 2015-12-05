@@ -2,9 +2,14 @@
 var OBJMTLLoader = new THREE.OBJMTLLoader();
 var TextureLoader = new THREE.TextureLoader();
 
+function approach(from, to, lerp) {
+	var dist = to - from;
+	return from + (dist * lerp);
+}
 
 function createScene(scene, camera, realScene, looper) {
 
+	var cars = [];
 	var car;
 
 	// var ambient = new THREE.AmbientLight( 0x333333 );
@@ -34,7 +39,7 @@ function createScene(scene, camera, realScene, looper) {
 		/* Load the car model! */
 		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-			object.scale.set(0.25, 0.5, 0.25)
+			object.scale.set(0.25, 0.25, 0.25)
 			object.position.z = -0.1;
 			object.position.y = 13;
 			object.position.x = 13;
@@ -58,10 +63,10 @@ function createScene(scene, camera, realScene, looper) {
 		/* Load the car model! */
 		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-			object.scale.set(0.25, 0.5, 0.25)
+			object.scale.set(0.25, 0.25, 0.25)
 			object.position.z = -0.1;
-			object.position.y = 23;
-			object.position.x = 23;
+			object.position.y = 0;
+			object.position.x = 0;
 
 			object.rotation.x = Math.PI/2;
 
@@ -70,6 +75,8 @@ function createScene(scene, camera, realScene, looper) {
 
 			object.castShadow = true;
 			object.receiveShadow = true;
+
+			cars.push(object);
 
 			resolve();
 
@@ -147,6 +154,9 @@ function createScene(scene, camera, realScene, looper) {
 		window.addEventListener("keyup", function(event) {
 			keysDown[String.fromCharCode(event.keyCode)] = false;
 		});
+
+		var xRotApproach = 0;
+		var yRotApproach = 0;
 
 		var carLocation = new THREE.Vector2(car.position.x, car.position.y);
 		var carHeading = 0.0;
@@ -241,60 +251,47 @@ function createScene(scene, camera, realScene, looper) {
 			var cameraQuat = new THREE.Quaternion();
 			cameraQuat.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
 
+			var xRot = 0;
+			var yRot = 0;
+
 			if (keysDown["1"]) {
-				var rotQuat = new THREE.Quaternion();
-				rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
-				cameraQuat.multiply(rotQuat);
+				xRot = 0;
+				yRot = Math.PI/3;
 			}
 
 			if (keysDown["2"]) {
-				var rotQuat = new THREE.Quaternion();
-				rotQuat.setFromAxisAngle( new THREE.Vector3(0, 0, 1), Math.PI );
-				cameraQuat.multiply(rotQuat);
-				rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
-				cameraQuat.multiply(rotQuat);
+				xRot = Math.PI;
+				yRot = Math.PI/3;
 			}
+
+			if (keysDown["3"]) {
+				xRot = Math.PI/2;
+				yRot = Math.PI/3;
+			}
+
+			if (keysDown["4"]) {
+				xRot = -Math.PI/2;
+				yRot = Math.PI/3;
+			}
+
+			xRotApproach = approach(xRotApproach, xRot, 0.08);
+			yRotApproach = approach(yRotApproach, yRot, 0.08);
+
+			var rotQuat = new THREE.Quaternion();
+			rotQuat.setFromAxisAngle( new THREE.Vector3(0, 0, 1), xRotApproach );
+			cameraQuat.multiply(rotQuat);
+			rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), yRotApproach );
+			cameraQuat.multiply(rotQuat);
 
 			var camFinal = new THREE.Euler();
 			camFinal.setFromQuaternion(cameraQuat);
+
+			var camFrom = new THREE.Quaternion();
+			camFrom.setFromEuler(new THREE.Euler(camera.rotation.x, camera.rotation.y, camera.rotation.z));
+			var camTo = new THREE.Quaternion();
+			camTo.setFromEuler(new THREE.Euler(camFinal.y, camFinal.y, camFinal.y));
+
 			camera.rotation.copy(camFinal);
-
-
-			// var cameraQuat = new THREE.Quaternion();
-			// cameraQuat.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
-
-
-
-			// var camRot = new THREE.Quaternion();
-			// var camTo = new THREE.Quaternion();
-			// var camFinal = new THREE.Euler();
-			// camRot.setFromEuler(camera.rotation);
-			// camTo.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
-
-			// if (keysDown["1"]) {
-			// 	var rotQuat = new THREE.Quaternion();
-			// 	rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
-			// 	camTo.multiply(rotQuat);
-			// 	// camera.rotation.setFromQuaternion(cameraQuat);
-			// }
-
-			// camRot.slerp(camTo, 0.08);
-
-			// if (keysDown["2"]) {
-			// 	var rotQuat = new THREE.Quaternion();
-			// 	rotQuat.setFromAxisAngle( new THREE.Vector3(0, 0, 1), Math.PI );
-			// 	camTo.multiply(rotQuat);
-			// 	rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
-			// 	camTo.multiply(rotQuat);
-			// 	camRot = camTo;
-			// }
-
-			// camFinal.setFromQuaternion(camRot);
-
-			// camera.rotation.copy(camFinal);
-			// camera.rotation.z = camFinal.x;
-			// camera.rotation.x = Math.PI/4;
-
 			camera.position.x = camPos.x;
 			camera.position.y = camPos.y;
 
