@@ -29,8 +29,8 @@ function createScene(scene) {
 
 		window.car = object;
 
-		object.scale.set(1, 1, 1)
-		object.position.z = -20;
+		object.scale.set(1, 3, 1)
+		object.position.z = -50;
 		object.position.y = 0;
 
 		// object.rotation.z = Math.PI;
