@@ -17,13 +17,15 @@
 
 	<script>
 		var scene = new THREE.Scene();
-		var camera = new THREE.PerspectiveCamera( 0.5235987755982988, window.innerWidth/window.innerHeight, 29.942397156296213, -151.45685488949442 );
+		var camera = new THREE.PerspectiveCamera( 0.5235987755982988, window.innerWidth/window.innerWidth, 29.942397156296213, -151.45685488949442 );
+
+		var _ScreenCameraDistance= window.innerWidth/(2*Math.tan(0.5235987755982988/2));
 
 		var renderer = new THREE.WebGLRenderer();
-		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setSize( window.innerWidth, window.innerWidth );
 		document.body.appendChild( renderer.domElement );
 
-		camera.position.z = 5000;
+		camera.position.z = _ScreenCameraDistance;
 
         createScene(scene);
 
