@@ -29,7 +29,7 @@ function createScene(scene) {
 
 		window.car = object;
 
-		object.scale.set(0.5, 3, 0.5)
+		object.scale.set(0.5, 1, 0.5)
 		object.position.z = -10;
 		object.position.y = 0;
 
