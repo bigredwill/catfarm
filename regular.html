@@ -17,9 +17,11 @@
 
 	<script>
 		var scene = new THREE.Scene();
-		var camera = new THREE.PerspectiveCamera( 0.5235987755982988, window.innerWidth/window.innerWidth, 29.942397156296213, -151.45685488949442 );
+		var fov = 80;
+		var camera = new THREE.PerspectiveCamera( fov, window.innerWidth/window.innerWidth, 29.942397156296213, -151.45685488949442 );
 
-		var _ScreenCameraDistance= window.innerWidth/(2*Math.tan(0.5235987755982988/2));
+		// var _ScreenCameraDistance= window.innerWidth/(2*Math.tan(fov/2));
+		var _ScreenCameraDistance= 50;
 
 		var renderer = new THREE.WebGLRenderer();
         renderer.setClearColor( 0xffffff );
