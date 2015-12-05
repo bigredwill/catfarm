@@ -19,7 +19,7 @@ function createScene(scene, camera, realScene, looper) {
 		/* Load the car model! */
 		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-			object.scale.set(0.25, 1, 0.25)
+			object.scale.set(0.25, 0.5, 0.25)
 			object.position.z = -0.1;
 			object.position.y = 13;
 			object.position.x = 13;
