@@ -7,7 +7,11 @@
         overflow: hidden;
     }
     </style>
-    <script src="https://www.leiainc.com/build/LeiaCore-latest.min.js"></script>
+    <!--<script src="https://www.leiainc.com/build/LeiaCore-latest.min.js"></script>-->
+    <script src="./leia/three.r68.patched.js"></script>
+    <script src="./leia/LeiaCookieHandler.js"></script>
+    <script src="./leia/LeiaKeystrokeHandler.js"></script>
+    <script src="./leia/LeiaCore.js"></script>
     <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_regular.typeface.js"></script>
     <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_bold.typeface.js"></script>
 
@@ -15,7 +19,7 @@
 <body style="margin: 0 0 0 0;"></body>
     <script>
         // Build The LeiaCore Objects
-        var leiaDisplayInfo = new LeiaDisplayInfo('https://www.leiainc.com/build/LeiaCore/config/displayPrototypeSmall.json');
+        var leiaDisplayInfo = new LeiaDisplayInfo('./test.json');
         var leiaHoloScreen  = new LeiaHoloScreen();
         var leiaRenderer    = new LeiaRenderer(leiaHoloScreen);
         var scene = new THREE.Scene();
