@@ -61,9 +61,9 @@ function createScene(scene, camera, realScene, looper) {
 					var material = new THREE.MeshPhongMaterial( {
 						map: texture,
 						normalMap: normal,
-						shininess: 60,
-						// specular: 0x333333,
-						emissive: 0x222222,
+						shininess: 10,
+						specular: 0x111111,
+						emissive: 0xffffff,
 					 } );
 
 					var road = new THREE.Mesh(
@@ -210,6 +210,14 @@ function createScene(scene, camera, realScene, looper) {
 			camera.position.y = camPos.y;
 			camera.rotation.z = camFinal.x;
 			// camera.rotation.x = Math.PI/4;
+
+
+			if (keysDown["1"]) {
+				camera.rotation.y = -Math.PI/3;
+			} else {
+				camera.rotation.y = 0;
+			}
+
 
 		});
 

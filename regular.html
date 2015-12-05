@@ -18,14 +18,14 @@
 	<script>
 		var scene = new THREE.Scene();
 		var fov = 80;
-		var camera = new THREE.PerspectiveCamera( fov, window.innerWidth/window.innerWidth, 29.942397156296213, -151.45685488949442 );
+		var camera = new THREE.PerspectiveCamera( fov, window.innerHeight/window.innerHeight, 0.942397156296213, -151.45685488949442 );
 
-		// var _ScreenCameraDistance= window.innerWidth/(2*Math.tan(fov/2));
-		var _ScreenCameraDistance= 50;
+		// var _ScreenCameraDistance= window.innerHeight/(2*Math.tan(fov/2));
+		var _ScreenCameraDistance= 30;
 
 		var renderer = new THREE.WebGLRenderer();
         renderer.setClearColor( 0xffffff );
-		renderer.setSize( window.innerWidth, window.innerWidth );
+		renderer.setSize( window.innerHeight, window.innerHeight );
 		document.body.appendChild( renderer.domElement );
 
 		camera.position.z = _ScreenCameraDistance;

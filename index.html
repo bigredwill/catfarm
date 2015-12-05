@@ -35,7 +35,7 @@
         leiaRenderer.renderer.setClearColor( 0xffffff );
 
 
-        var lks = new LeiaKeystrokeHandler(scene, leiaHoloScreen, leiaRenderer, true);
+        var lks = new LeiaKeystrokeHandler(scene, leiaHoloScreen, leiaRenderer, false);
         lks.addKeyHandlerForCharCode(KEY.SPACE, function(event){
             // isAnimating = !isAnimating;
         });
