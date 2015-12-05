@@ -7,12 +7,27 @@ function createScene(scene, camera, realScene, looper) {
 
 	var car;
 
-	var ambient = new THREE.AmbientLight( 0x222233 );
-	scene.add( ambient );
+	// var ambient = new THREE.AmbientLight( 0x333333 );
+	// scene.add( ambient );
 
-	var directionalLight = new THREE.DirectionalLight( 0xffccff );
+	var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
 	directionalLight.position.set( 0, 0, 1.5 ).normalize();
-	realScene.add( directionalLight );
+	directionalLight.castShadow = true;
+
+	directionalLight.shadowCameraNear = 1200;
+	directionalLight.shadowCameraFar = 2500;
+	directionalLight.shadowCameraFov = 50;
+
+	directionalLight.shadowBias = 0.0001;
+
+	directionalLight.shadowMapWidth = 2048;
+	directionalLight.shadowMapHeight = 2048;
+
+	scene.add( directionalLight );
+
+	var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
+	scene.add(light);
+
 
 	new Promise(function(resolve, reject) {
 
@@ -29,6 +44,9 @@ function createScene(scene, camera, realScene, looper) {
 			scene.add( object );
 			console.log("hey");
 
+			object.castShadow = true;
+			object.receiveShadow = true;
+
 			car = object;
 
 			resolve();
@@ -41,7 +59,7 @@ function createScene(scene, camera, realScene, looper) {
 
 			TextureLoader.load(
 				// resource URL
-				'models/parkinglot.jpg',
+				'texture/parkinglot.png',
 				// Function when resource is loaded
 				function ( texture ) {
 					resolve(texture);
@@ -58,12 +76,12 @@ function createScene(scene, camera, realScene, looper) {
 				// Function when resource is loaded
 				function ( normal ) {
 					// do something with the texture
-					var material = new THREE.MeshPhongMaterial( {
+					var material = new THREE.MeshLambertMaterial( {
 						map: texture,
 						normalMap: normal,
-						shininess: 10,
-						specular: 0x111111,
-						emissive: 0xffffff,
+						shininess: 0,
+						specular: 0xAAAAAA,
+						emissive: 0x555555,
 					 } );
 
 					var road = new THREE.Mesh(
@@ -198,26 +216,65 @@ function createScene(scene, camera, realScene, looper) {
 			var camPos = new THREE.Vector2(camera.position.x, camera.position.y);
 			camPos.lerp(new THREE.Vector2(car.position.x, car.position.y), 0.25);
 
-			var camRot = new THREE.Quaternion();
-			var camTo = new THREE.Quaternion();
+			var cameraQuat = new THREE.Quaternion();
+			cameraQuat.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
+
+			if (keysDown["1"]) {
+				var rotQuat = new THREE.Quaternion();
+				rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
+				cameraQuat.multiply(rotQuat);
+			}
+
+			if (keysDown["2"]) {
+				var rotQuat = new THREE.Quaternion();
+				rotQuat.setFromAxisAngle( new THREE.Vector3(0, 0, 1), Math.PI );
+				cameraQuat.multiply(rotQuat);
+				rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
+				cameraQuat.multiply(rotQuat);
+			}
+
 			var camFinal = new THREE.Euler();
-			camRot.setFromEuler(new THREE.Euler(camera.rotation.z, 0, 0));
-			camTo.setFromEuler(new THREE.Euler(car.rotation.y, 0, 0));
-			camRot.slerp(camTo, 0.08);
-			camFinal.setFromQuaternion(camRot);
+			camFinal.setFromQuaternion(cameraQuat);
+			camera.rotation.copy(camFinal);
+
+
+			// var cameraQuat = new THREE.Quaternion();
+			// cameraQuat.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
+
+
+
+			// var camRot = new THREE.Quaternion();
+			// var camTo = new THREE.Quaternion();
+			// var camFinal = new THREE.Euler();
+			// camRot.setFromEuler(camera.rotation);
+			// camTo.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
+
+			// if (keysDown["1"]) {
+			// 	var rotQuat = new THREE.Quaternion();
+			// 	rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
+			// 	camTo.multiply(rotQuat);
+			// 	// camera.rotation.setFromQuaternion(cameraQuat);
+			// }
+
+			// camRot.slerp(camTo, 0.08);
+
+			// if (keysDown["2"]) {
+			// 	var rotQuat = new THREE.Quaternion();
+			// 	rotQuat.setFromAxisAngle( new THREE.Vector3(0, 0, 1), Math.PI );
+			// 	camTo.multiply(rotQuat);
+			// 	rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), Math.PI/3 );
+			// 	camTo.multiply(rotQuat);
+			// 	camRot = camTo;
+			// }
+
+			// camFinal.setFromQuaternion(camRot);
+
+			// camera.rotation.copy(camFinal);
+			// camera.rotation.z = camFinal.x;
+			// camera.rotation.x = Math.PI/4;
 
 			camera.position.x = camPos.x;
 			camera.position.y = camPos.y;
-			camera.rotation.z = camFinal.x;
-			// camera.rotation.x = Math.PI/4;
-
-
-			if (keysDown["1"]) {
-				camera.rotation.y = -Math.PI/3;
-			} else {
-				camera.rotation.y = 0;
-			}
-
 
 		});
 

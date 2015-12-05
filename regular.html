@@ -26,6 +26,10 @@
 		var renderer = new THREE.WebGLRenderer();
         renderer.setClearColor( 0xffffff );
 		renderer.setSize( window.innerHeight, window.innerHeight );
+
+		renderer.shadowMapEnabled = true;
+		renderer.shadowMapType = THREE.PCFShadowMap;
+
 		document.body.appendChild( renderer.domElement );
 
 		camera.position.z = _ScreenCameraDistance;
