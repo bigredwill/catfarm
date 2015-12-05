@@ -22,11 +22,22 @@
     <script src="./bower_components/bluebird/js/browser/bluebird.js"></script>
     <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_regular.typeface.js"></script>
     <script src="https://www.leiainc.com/build/LeiaCoreUtil/js/helvetiker_bold.typeface.js"></script>
+    
+    <!-- For getting hover/touch data from the device. -->
+    <script src="./src/socket.io-1.2.0.js"></script>
+
+
+    <!-- The scene. -->
     <script src="./src/scene.js"></script>
+
+    <script type="text/javascript" src="src/hovertouch.js"></script>
+
 
 </head>
 <body style="margin: 0 0 0 0;"></body>
     <script>
+
+
         // Build The LeiaCore Objects
         var leiaDisplayInfo = new LeiaDisplayInfo('./test.json');
         var leiaHoloScreen  = new LeiaHoloScreen();

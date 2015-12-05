@@ -32,6 +32,13 @@ module.exports = function(grunt) {
           }
         }
       }
+    },
+
+
+    execute: {
+      target: {
+        src: ['server/server.js']
+      }
     }
 
   });
@@ -39,9 +46,10 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-execute');
 
 
-  grunt.registerTask('default', ['connect', 'watch']);
+  grunt.registerTask('default', ['connect', 'execute', 'watch']);
 
 }
 
