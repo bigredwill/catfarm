@@ -30,10 +30,23 @@
 
 		camera.position.z = _ScreenCameraDistance;
 
-        createScene(scene);
+        var loopFn = function() {};
+
+        var fakeScene = new THREE.Object3D();
+        var fakeCam = new THREE.Object3D();
+        scene.add(fakeScene);
+        scene.add(fakeCam);
+
+        createScene(fakeScene, fakeCam, function(_loopFn) { loopFn = _loopFn });
 
 		var render = function () {
 			requestAnimationFrame( render );
+			loopFn();
+			var mat = new THREE.Matrix4();
+			var mat2 = new THREE.Matrix4();
+			mat2.compose( fakeCam.position, fakeCam.quaternion, fakeCam.scale );
+			mat.getInverse( mat2 );
+			mat.decompose( fakeScene.position, fakeScene.quaternion, fakeScene.scale );
 			renderer.render(scene, camera);
 		};
 
