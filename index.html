@@ -9,6 +9,11 @@
     </style>
     <!--<script src="https://www.leiainc.com/build/LeiaCore-latest.min.js"></script>-->
     <script src="./leia/three.r68.patched.js"></script>
+    <script src="./src/Group.js"></script>
+    <script src="./src/MTLLoader.js"></script>
+    <script src="./src/OBJMTLLoader.js"></script>
+    <script src="./src/OBJLoader.js"></script>
+    <script src="./src/scene.js"></script>
     <script src="./leia/LeiaCookieHandler.js"></script>
     <script src="./leia/LeiaKeystrokeHandler.js"></script>
     <script src="./leia/LeiaCore.js"></script>
@@ -24,6 +29,8 @@
         var leiaHoloScreen  = new LeiaHoloScreen();
         var leiaRenderer    = new LeiaRenderer(leiaHoloScreen);
         var scene = new THREE.Scene();
+
+        console.log(leiaRenderer);
 
         // Connect LeiaRenderer To The Page
         document.body.appendChild(leiaRenderer.renderer.domElement);
