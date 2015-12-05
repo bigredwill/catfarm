@@ -1,0 +1,26 @@
+{
+  "name": "catfarm",
+  "version": "1.0.0",
+  "description": "We're making a cat farm.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bigredwill/catfarm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bigredwill/catfarm/issues"
+  },
+  "homepage": "https://github.com/bigredwill/catfarm#readme",
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1"
+  },
+  "devDependencies": {
+    "grunt-contrib-connect": "^0.11.2"
+  }
+}
