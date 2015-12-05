@@ -31,6 +31,12 @@
         var scene = new THREE.Scene();
         leiaRenderer.renderer.setClearColor( 0xffffff );
 
+
+        var lks = new LeiaKeystrokeHandler(scene, leiaHoloScreen, leiaRenderer, true);
+        lks.addKeyHandlerForCharCode(KEY.SPACE, function(event){
+            // isAnimating = !isAnimating;
+        });
+
         console.log(leiaRenderer);
 
         // Connect LeiaRenderer To The Page
