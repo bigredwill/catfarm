@@ -113,6 +113,33 @@ function createScene(scene, camera, realScene, looper) {
 		});
 
 	}).then(function() {
+
+		return new Promise(function(resolve, reject) {
+			/* Load the car model! */
+			OBJMTLLoader.load( './models/will.obj', './models/will.mtl', function ( object ) {
+
+				object.scale.set(0.5, 0.5, 0.5);
+				object.position.z = -0.1;
+				object.position.y = 10;
+				object.position.x = 10;
+
+				object.rotation.x = Math.PI/2;
+
+				scene.add( object );
+
+				object.castShadow = true;
+				object.receiveShadow = true;
+				object.collision = new SAT.Box(new SAT.Vector(0,0), 7, 15).toPolygon();
+				object.collision.offset = new SAT.Vector(-3.5, -7.5);
+				// object.material.emissive = 0xffffff;
+				// object.material.shininess = 0;
+
+				resolve();
+
+			} );
+		});
+
+	}).then(function() {
 		return new Promise(function(resolve, reject) {
 
 			TextureLoader.load(
