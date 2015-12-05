@@ -9,20 +9,16 @@ function approach(from, to, lerp) {
 
 var cameraView = "TOP";
 function viewInput(input) {
-	if (cameraView == "TOP") {
-		cameraView = input;
-	} else {
+	// if (cameraView == "TOP") {
+	// } else {
 
-		if (
-			(input == "UP" && cameraView == "DOWN") ||
-			(input == "DOWN" && cameraView == "UP") ||
-			(input == "LEFT" && cameraView == "RIGHT") ||
-			(input == "RIGHT" && cameraView == "LEFT")
-		) {
+		if (input == cameraView) {
 			cameraView = "TOP";
+		} else {
+			cameraView = input;
 		}
 
-	}
+	// }
 };
 
 function createScene(scene, camera, realScene, looper) {
