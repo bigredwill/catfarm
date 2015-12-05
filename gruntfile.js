@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
     watch: {
       scripts: {
-        files: ['src/scene.js'],
+        files: ['src/scene.js', 'src/collision.js'],
         tasks: [],
         options: {
           livereload: true,

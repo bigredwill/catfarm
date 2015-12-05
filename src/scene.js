@@ -11,6 +11,7 @@ function createScene(scene, camera, realScene, looper) {
 
 	var cars = [];
 	var car;
+	var warning;
 
 	// var ambient = new THREE.AmbientLight( 0x333333 );
 	// scene.add( ambient );
@@ -33,6 +34,31 @@ function createScene(scene, camera, realScene, looper) {
 	var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
 	scene.add(light);
 
+	var material = new THREE.LineBasicMaterial({
+		color: 0x0000ff
+	});
+
+	var geometry = new THREE.Geometry();
+	geometry.vertices.push(
+		new THREE.Vector3( -10, 0, 1 ),
+		new THREE.Vector3( 0, 10, 1 ),
+		new THREE.Vector3( 10, 0, 1 ),
+		new THREE.Vector3( 10, 10, 1 )
+	);
+
+	var line = new THREE.Line( geometry, material );
+	scene.add( line );
+
+	var geometry2 = new THREE.Geometry();
+	geometry2.vertices.push(
+		new THREE.Vector3( -10, 0, 1 ),
+		new THREE.Vector3( 0, 10, 1 ),
+		new THREE.Vector3( 10, 0, 1 ),
+		new THREE.Vector3( 10, 10, 1 )
+	);
+
+	var line2 = new THREE.Line( geometry2, material );
+	scene.add( line2 );
 
 	new Promise(function(resolve, reject) {
 
@@ -47,10 +73,11 @@ function createScene(scene, camera, realScene, looper) {
 			object.rotation.x = Math.PI/2;
 
 			scene.add( object );
-			console.log("hey");
 
 			object.castShadow = true;
 			object.receiveShadow = true;
+			object.collision = new SAT.Box(new SAT.Vector(0,0), 10, 20).toPolygon();
+			object.collision.offset = new SAT.Vector(-5, -10);
 
 			car = object;
 
@@ -60,28 +87,30 @@ function createScene(scene, camera, realScene, looper) {
 
 	}).then(function() {
 
-		/* Load the car model! */
-		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
+		return new Promise(function(resolve, reject) {
+			/* Load the car model! */
+			OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-			object.scale.set(0.25, 0.25, 0.25)
-			object.position.z = -0.1;
-			object.position.y = 0;
-			object.position.x = 0;
+				object.scale.set(0.25, 0.25, 0.25)
+				object.position.z = -0.1;
+				object.position.y = 0;
+				object.position.x = 0;
 
-			object.rotation.x = Math.PI/2;
+				object.rotation.x = Math.PI/2;
 
-			scene.add( object );
-			console.log("hey");
+				scene.add( object );
 
-			object.castShadow = true;
-			object.receiveShadow = true;
+				object.castShadow = true;
+				object.receiveShadow = true;
+				object.collision = new SAT.Box(new SAT.Vector(0,0), 7, 15).toPolygon();
+				object.collision.offset = new SAT.Vector(-3.5, -7.5);
 
-			cars.push(object);
+				cars.push(object);
 
-			resolve();
+				resolve();
 
-		} );
-
+			} );
+		});
 
 	}).then(function() {
 		return new Promise(function(resolve, reject) {
@@ -122,6 +151,38 @@ function createScene(scene, camera, realScene, looper) {
 					scene.add(road);
 
 					resolve();
+				}
+			);
+
+		});
+	}).then(function() {
+		return new Promise(function(resolve, reject) {
+
+			TextureLoader.load(
+				// resource URL
+				'texture/warning.png',
+				// Function when resource is loaded
+				function ( texture ) {
+
+					var material = new THREE.MeshLambertMaterial( {
+						map: texture,
+						shininess: 0,
+						specular: 0xAAAAAA,
+						emissive: 0x555555,
+						alpha: 0.5,
+						transparent: true
+					 } );
+
+					warning = new THREE.Mesh(
+						new THREE.PlaneGeometry(10, 10),
+						material
+					);
+					warning.position.z = 5;
+
+					scene.add(warning);
+
+
+					resolve(texture);
 				}
 			);
 
@@ -168,9 +229,12 @@ function createScene(scene, camera, realScene, looper) {
 		var oldTime = time;
 		var delta = 0;
 		looper(function() {
+
 			oldTime = time;
 			time = (new Date()).getTime()/1000;
 			var delta = (time - oldTime);
+
+			/* Car Control */
 
 			if (keysDown["T"]) {
 				carSpeed += 100 * delta;
@@ -245,6 +309,8 @@ function createScene(scene, camera, realScene, looper) {
 			car.position.y = carLocation.y;
 			car.rotation.y = carHeading + Math.PI/2 + Math.PI;
 
+			/* Camera Control */
+
 			var camPos = new THREE.Vector2(camera.position.x, camera.position.y);
 			camPos.lerp(new THREE.Vector2(car.position.x, car.position.y), 0.25);
 
@@ -294,6 +360,23 @@ function createScene(scene, camera, realScene, looper) {
 			camera.rotation.copy(camFinal);
 			camera.position.x = camPos.x;
 			camera.position.y = camPos.y;
+
+			// console.log(car.position.x, car.position.y);
+
+			/* Ray Tracing */
+			warning.visible = false;
+			var colRes = testCollisionObjects(car, cars[0], geometry, geometry2);
+			if (colRes.collided) {
+				warning.position.setX(colRes.a.offset.x + colRes.overlapN.x*5*1);
+				warning.position.setY(colRes.a.offset.y + colRes.overlapN.y*5*1);
+				// warning.position.setX(colRes.a.pos.x);
+				// warning.position.setY(colRes.a.pos.y);
+				// console.log("hey", colRes.a.overlapV.y);
+				if (Math.floor(time * 5) % 2) {
+					warning.visible = true;
+				}
+			}
+			warning.rotation.copy(camera.rotation);
 
 		});
 
