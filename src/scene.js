@@ -7,6 +7,24 @@ function approach(from, to, lerp) {
 	return from + (dist * lerp);
 }
 
+var cameraView = "TOP";
+function viewInput(input) {
+	if (cameraView == "TOP") {
+		cameraView = input;
+	} else {
+
+		if (
+			(input == "UP" && cameraView == "DOWN") ||
+			(input == "DOWN" && cameraView == "UP") ||
+			(input == "LEFT" && cameraView == "RIGHT") ||
+			(input == "RIGHT" && cameraView == "LEFT")
+		) {
+			cameraView = "TOP";
+		}
+
+	}
+};
+
 function createScene(scene, camera, realScene, looper) {
 
 	var cars = [];
@@ -347,22 +365,22 @@ function createScene(scene, camera, realScene, looper) {
 			var xRot = 0;
 			var yRot = 0;
 
-			if (keysDown["1"]) {
+			if (cameraView == "UP") {
 				xRot = 0;
 				yRot = Math.PI/3;
 			}
 
-			if (keysDown["2"]) {
+			if (cameraView == "DOWN") {
 				xRot = Math.PI;
 				yRot = Math.PI/3;
 			}
 
-			if (keysDown["3"]) {
+			if (cameraView == "LEFT") {
 				xRot = Math.PI/2;
 				yRot = Math.PI/3;
 			}
 
-			if (keysDown["4"]) {
+			if (cameraView == "RIGHT") {
 				xRot = -Math.PI/2;
 				yRot = Math.PI/3;
 			}

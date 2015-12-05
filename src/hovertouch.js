@@ -61,16 +61,20 @@ var dispatchTouchEvent = function(type, x, y) {
 		if (Math.abs(dX) > Math.abs(dY)) {
 			if(Math.abs(dX) > xSwipeThresh && dT < swipeMaxTime) {
 				if(dX < 0) {
+					viewInput("RIGHT");
 					console.log("swipe right");
 				} else if (dX > 0) {
+					viewInput("LEFT");
 					console.log("swipe left");
 				}
 			};
 		} else {
 			if(Math.abs(dY) > ySwipeThresh && dT < swipeMaxTime) {
 				if(dY < 0) {
+					viewInput("UP");
 					console.log("swipe up");
 				} else if (dY > 0) {
+					viewInput("DOWN");
 					console.log("swipe down");
 				}
 			};
