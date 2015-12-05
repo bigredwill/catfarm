@@ -38,7 +38,7 @@ function createScene(scene) {
 		object.rotation.x = Math.PI/2;
 
 		setInterval(function() {
-			object.rotation.y += 0.01;
+			// object.rotation.y += 0.01;
 		}, 0);
 
 		// object.rotation.x += 10;
