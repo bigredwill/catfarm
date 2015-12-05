@@ -52,7 +52,7 @@
         scene.add(fakeScene);
         scene.add(fakeCam);
 
-        createScene(fakeScene, fakeCam, function(_loopFn) { loopFn = _loopFn });
+        createScene(fakeScene, fakeCam, scene, function(_loopFn) { loopFn = _loopFn });
 
         var render = function () {
             requestAnimationFrame( render );
