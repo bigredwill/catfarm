@@ -29,6 +29,7 @@
         var leiaHoloScreen  = new LeiaHoloScreen();
         var leiaRenderer    = new LeiaRenderer(leiaHoloScreen);
         var scene = new THREE.Scene();
+        leiaRenderer.renderer.setClearColor( 0xffffff );
 
         console.log(leiaRenderer);
 

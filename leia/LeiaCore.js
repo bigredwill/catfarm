@@ -941,7 +941,7 @@ function LeiaRenderer(leiaHoloObject, parameters) {
             if  ( this.videotexture ) this.videotexture.needsUpdate = true;
         }
         this.updateRenderer(this.leiaHoloObject);
-        this.renderer.setClearColor(new THREE.Color().setRGB(0.0, 0.0, 0.0));
+        this.renderer.setClearColor(new THREE.Color().setRGB(1.0, 1.0, 1.0));
         this.renderer.setViewport(0, 0, this.width, this.height);
         this.renderer.setScissor (0, 0, this.width, this.height);
         this.renderer.enableScissorTest(true);
@@ -981,7 +981,7 @@ function LeiaRenderer(leiaHoloObject, parameters) {
     };
 
     this.renderTiles = function(scene, textures) {
-        this.renderer.setClearColor(new THREE.Color().setRGB(0.0, 0.0, 0.0));
+        this.renderer.setClearColor(new THREE.Color().setRGB(1.0, 1.0, 1.0));
 
         var currentCamera       = this.camera;
         var numberOfTextures    = this.leiaHoloObject.currentMode.numberOfTextures;

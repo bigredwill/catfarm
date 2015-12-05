@@ -22,6 +22,7 @@
 		var _ScreenCameraDistance= window.innerWidth/(2*Math.tan(0.5235987755982988/2));
 
 		var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor( 0xffffff );
 		renderer.setSize( window.innerWidth, window.innerWidth );
 		document.body.appendChild( renderer.domElement );
 
