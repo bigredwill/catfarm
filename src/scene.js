@@ -2,24 +2,70 @@
 var OBJMTLLoader = new THREE.OBJMTLLoader();
 var TextureLoader = new THREE.TextureLoader();
 
+function approach(from, to, lerp) {
+	var dist = to - from;
+	return from + (dist * lerp);
+}
 
 function createScene(scene, camera, realScene, looper) {
 
+	var cars = [];
 	var car;
+	var warning;
 
-	var ambient = new THREE.AmbientLight( 0x222233 );
-	scene.add( ambient );
+	// var ambient = new THREE.AmbientLight( 0x333333 );
+	// scene.add( ambient );
 
-	var directionalLight = new THREE.DirectionalLight( 0xffccff );
+	var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
 	directionalLight.position.set( 0, 0, 1.5 ).normalize();
-	realScene.add( directionalLight );
+	directionalLight.castShadow = true;
+
+	directionalLight.shadowCameraNear = 1200;
+	directionalLight.shadowCameraFar = 2500;
+	directionalLight.shadowCameraFov = 50;
+
+	directionalLight.shadowBias = 0.0001;
+
+	directionalLight.shadowMapWidth = 2048;
+	directionalLight.shadowMapHeight = 2048;
+
+	scene.add( directionalLight );
+
+	var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
+	scene.add(light);
+
+	var material = new THREE.LineBasicMaterial({
+		color: 0x0000ff
+	});
+
+	var geometry = new THREE.Geometry();
+	geometry.vertices.push(
+		new THREE.Vector3( -10, 0, 1 ),
+		new THREE.Vector3( 0, 10, 1 ),
+		new THREE.Vector3( 10, 0, 1 ),
+		new THREE.Vector3( 10, 10, 1 )
+	);
+
+	var line = new THREE.Line( geometry, material );
+	scene.add( line );
+
+	var geometry2 = new THREE.Geometry();
+	geometry2.vertices.push(
+		new THREE.Vector3( -10, 0, 1 ),
+		new THREE.Vector3( 0, 10, 1 ),
+		new THREE.Vector3( 10, 0, 1 ),
+		new THREE.Vector3( 10, 10, 1 )
+	);
+
+	var line2 = new THREE.Line( geometry2, material );
+	scene.add( line2 );
 
 	new Promise(function(resolve, reject) {
 
 		/* Load the car model! */
 		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-			object.scale.set(0.25, 0.5, 0.25)
+			object.scale.set(0.25, 0.25, 0.25)
 			object.position.z = -0.1;
 			object.position.y = 13;
 			object.position.x = 13;
@@ -27,7 +73,11 @@ function createScene(scene, camera, realScene, looper) {
 			object.rotation.x = Math.PI/2;
 
 			scene.add( object );
-			console.log("hey");
+
+			object.castShadow = true;
+			object.receiveShadow = true;
+			object.collision = new SAT.Box(new SAT.Vector(0,0), 10, 20).toPolygon();
+			object.collision.offset = new SAT.Vector(-5, -10);
 
 			car = object;
 
@@ -35,13 +85,66 @@ function createScene(scene, camera, realScene, looper) {
 
 		} );
 
+	}).then(function() {
+
+		return new Promise(function(resolve, reject) {
+			/* Load the car model! */
+			OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
+
+				object.scale.set(0.25, 0.25, 0.25)
+				object.position.z = -0.1;
+				object.position.y = 0;
+				object.position.x = 0;
+
+				object.rotation.x = Math.PI/2;
+
+				scene.add( object );
+
+				object.castShadow = true;
+				object.receiveShadow = true;
+				object.collision = new SAT.Box(new SAT.Vector(0,0), 7, 15).toPolygon();
+				object.collision.offset = new SAT.Vector(-3.5, -7.5);
+
+				cars.push(object);
+
+				resolve();
+
+			} );
+		});
+
+	}).then(function() {
+
+		return new Promise(function(resolve, reject) {
+			/* Load the car model! */
+			OBJMTLLoader.load( './models/will.obj', './models/will.mtl', function ( object ) {
+
+				object.scale.set(0.5, 0.5, 0.5);
+				object.position.z = -0.1;
+				object.position.y = 10;
+				object.position.x = 10;
+
+				object.rotation.x = Math.PI/2;
+
+				scene.add( object );
+
+				object.castShadow = true;
+				object.receiveShadow = true;
+				object.collision = new SAT.Box(new SAT.Vector(0,0), 7, 15).toPolygon();
+				object.collision.offset = new SAT.Vector(-3.5, -7.5);
+				// object.material.emissive = 0xffffff;
+				// object.material.shininess = 0;
+
+				resolve();
+
+			} );
+		});
 
 	}).then(function() {
 		return new Promise(function(resolve, reject) {
 
 			TextureLoader.load(
 				// resource URL
-				'models/parkinglot.jpg',
+				'texture/parkinglot.png',
 				// Function when resource is loaded
 				function ( texture ) {
 					resolve(texture);
@@ -58,12 +161,12 @@ function createScene(scene, camera, realScene, looper) {
 				// Function when resource is loaded
 				function ( normal ) {
 					// do something with the texture
-					var material = new THREE.MeshPhongMaterial( {
+					var material = new THREE.MeshLambertMaterial( {
 						map: texture,
 						normalMap: normal,
-						shininess: 60,
-						// specular: 0x333333,
-						emissive: 0x222222,
+						shininess: 0,
+						specular: 0xAAAAAA,
+						emissive: 0x555555,
 					 } );
 
 					var road = new THREE.Mesh(
@@ -75,6 +178,38 @@ function createScene(scene, camera, realScene, looper) {
 					scene.add(road);
 
 					resolve();
+				}
+			);
+
+		});
+	}).then(function() {
+		return new Promise(function(resolve, reject) {
+
+			TextureLoader.load(
+				// resource URL
+				'texture/warning.png',
+				// Function when resource is loaded
+				function ( texture ) {
+
+					var material = new THREE.MeshLambertMaterial( {
+						map: texture,
+						shininess: 0,
+						specular: 0xAAAAAA,
+						emissive: 0x555555,
+						alpha: 0.5,
+						transparent: true
+					 } );
+
+					warning = new THREE.Mesh(
+						new THREE.PlaneGeometry(10, 10),
+						material
+					);
+					warning.position.z = 5;
+
+					scene.add(warning);
+
+
+					resolve(texture);
 				}
 			);
 
@@ -108,6 +243,9 @@ function createScene(scene, camera, realScene, looper) {
 			keysDown[String.fromCharCode(event.keyCode)] = false;
 		});
 
+		var xRotApproach = 0;
+		var yRotApproach = 0;
+
 		var carLocation = new THREE.Vector2(car.position.x, car.position.y);
 		var carHeading = 0.0;
 		var carSpeed = 10.0;
@@ -118,9 +256,12 @@ function createScene(scene, camera, realScene, looper) {
 		var oldTime = time;
 		var delta = 0;
 		looper(function() {
+
 			oldTime = time;
 			time = (new Date()).getTime()/1000;
 			var delta = (time - oldTime);
+
+			/* Car Control */
 
 			if (keysDown["T"]) {
 				carSpeed += 100 * delta;
@@ -195,21 +336,74 @@ function createScene(scene, camera, realScene, looper) {
 			car.position.y = carLocation.y;
 			car.rotation.y = carHeading + Math.PI/2 + Math.PI;
 
+			/* Camera Control */
+
 			var camPos = new THREE.Vector2(camera.position.x, camera.position.y);
 			camPos.lerp(new THREE.Vector2(car.position.x, car.position.y), 0.25);
 
-			var camRot = new THREE.Quaternion();
-			var camTo = new THREE.Quaternion();
-			var camFinal = new THREE.Euler();
-			camRot.setFromEuler(new THREE.Euler(camera.rotation.z, 0, 0));
-			camTo.setFromEuler(new THREE.Euler(car.rotation.y, 0, 0));
-			camRot.slerp(camTo, 0.08);
-			camFinal.setFromQuaternion(camRot);
+			var cameraQuat = new THREE.Quaternion();
+			cameraQuat.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));
 
+			var xRot = 0;
+			var yRot = 0;
+
+			if (keysDown["1"]) {
+				xRot = 0;
+				yRot = Math.PI/3;
+			}
+
+			if (keysDown["2"]) {
+				xRot = Math.PI;
+				yRot = Math.PI/3;
+			}
+
+			if (keysDown["3"]) {
+				xRot = Math.PI/2;
+				yRot = Math.PI/3;
+			}
+
+			if (keysDown["4"]) {
+				xRot = -Math.PI/2;
+				yRot = Math.PI/3;
+			}
+
+			xRotApproach = approach(xRotApproach, xRot, 0.08);
+			yRotApproach = approach(yRotApproach, yRot, 0.08);
+
+			var rotQuat = new THREE.Quaternion();
+			rotQuat.setFromAxisAngle( new THREE.Vector3(0, 0, 1), xRotApproach );
+			cameraQuat.multiply(rotQuat);
+			rotQuat.setFromAxisAngle( new THREE.Vector3(1, 0, 0), yRotApproach );
+			cameraQuat.multiply(rotQuat);
+
+			var camFinal = new THREE.Euler();
+			camFinal.setFromQuaternion(cameraQuat);
+
+			var camFrom = new THREE.Quaternion();
+			camFrom.setFromEuler(new THREE.Euler(camera.rotation.x, camera.rotation.y, camera.rotation.z));
+			var camTo = new THREE.Quaternion();
+			camTo.setFromEuler(new THREE.Euler(camFinal.y, camFinal.y, camFinal.y));
+
+			camera.rotation.copy(camFinal);
 			camera.position.x = camPos.x;
 			camera.position.y = camPos.y;
-			camera.rotation.z = camFinal.x;
-			// camera.rotation.x = Math.PI/4;
+
+			// console.log(car.position.x, car.position.y);
+
+			/* Ray Tracing */
+			warning.visible = false;
+			var colRes = testCollisionObjects(car, cars[0], geometry, geometry2);
+			if (colRes.collided) {
+				warning.position.setX(colRes.a.offset.x + colRes.overlapN.x*5*1);
+				warning.position.setY(colRes.a.offset.y + colRes.overlapN.y*5*1);
+				// warning.position.setX(colRes.a.pos.x);
+				// warning.position.setY(colRes.a.pos.y);
+				// console.log("hey", colRes.a.overlapV.y);
+				if (Math.floor(time * 5) % 2) {
+					warning.visible = true;
+				}
+			}
+			warning.rotation.copy(camera.rotation);
 
 		});
 
