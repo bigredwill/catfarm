@@ -24,15 +24,15 @@ function testCollisionObjects(obj1, obj2, debugGeo, debugGeo2) {
 	var collided = SAT.testPolygonPolygon(collision1, collision2, response);
 	response.collided = collided;
 
-	for (var i = 0; i < 4; i++) {
-		debugGeo.vertices[i].set(collision1.calcPoints[i].x, collision1.calcPoints[i].y, 1);
-	}
-	debugGeo.verticesNeedUpdate = true;
+	// for (var i = 0; i < 4; i++) {
+	// 	debugGeo.vertices[i].set(collision1.calcPoints[i].x, collision1.calcPoints[i].y, 1);
+	// }
+	// debugGeo.verticesNeedUpdate = true;
 
-	for (var i = 0; i < 4; i++) {
-		debugGeo2.vertices[i].set(collision2.calcPoints[i].x, collision2.calcPoints[i].y, 1);
-	}
-	debugGeo2.verticesNeedUpdate = true;
+	// for (var i = 0; i < 4; i++) {
+	// 	debugGeo2.vertices[i].set(collision2.calcPoints[i].x, collision2.calcPoints[i].y, 1);
+	// }
+	// debugGeo2.verticesNeedUpdate = true;
 
 	return response;
 }

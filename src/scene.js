@@ -25,12 +25,13 @@ function createScene(scene, camera, realScene, looper) {
 
 	var cars = [];
 	var car;
+	var shadow;
 	var warning;
 
 	// var ambient = new THREE.AmbientLight( 0x333333 );
 	// scene.add( ambient );
 
-	var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+	var directionalLight = new THREE.DirectionalLight( 0xcccccc, 0.15 );
 	directionalLight.position.set( 0, 0, 1.5 ).normalize();
 	directionalLight.castShadow = true;
 
@@ -43,43 +44,43 @@ function createScene(scene, camera, realScene, looper) {
 	directionalLight.shadowMapWidth = 2048;
 	directionalLight.shadowMapHeight = 2048;
 
-	scene.add( directionalLight );
+	realScene.add( directionalLight );
 
-	var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
-	scene.add(light);
+	var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1.5 );
+	realScene.add(light);
 
 	var material = new THREE.LineBasicMaterial({
 		color: 0x0000ff
 	});
 
-	var geometry = new THREE.Geometry();
-	geometry.vertices.push(
-		new THREE.Vector3( -10, 0, 1 ),
-		new THREE.Vector3( 0, 10, 1 ),
-		new THREE.Vector3( 10, 0, 1 ),
-		new THREE.Vector3( 10, 10, 1 )
-	);
+	// var geometry = new THREE.Geometry();
+	// geometry.vertices.push(
+	// 	new THREE.Vector3( -10, 0, 1 ),
+	// 	new THREE.Vector3( 0, 10, 1 ),
+	// 	new THREE.Vector3( 10, 0, 1 ),
+	// 	new THREE.Vector3( 10, 10, 1 )
+	// );
 
-	var line = new THREE.Line( geometry, material );
-	scene.add( line );
+	// var line = new THREE.Line( geometry, material );
+	// scene.add( line );
 
-	var geometry2 = new THREE.Geometry();
-	geometry2.vertices.push(
-		new THREE.Vector3( -10, 0, 1 ),
-		new THREE.Vector3( 0, 10, 1 ),
-		new THREE.Vector3( 10, 0, 1 ),
-		new THREE.Vector3( 10, 10, 1 )
-	);
+	// var geometry2 = new THREE.Geometry();
+	// geometry2.vertices.push(
+	// 	new THREE.Vector3( -10, 0, 1 ),
+	// 	new THREE.Vector3( 0, 10, 1 ),
+	// 	new THREE.Vector3( 10, 0, 1 ),
+	// 	new THREE.Vector3( 10, 10, 1 )
+	// );
 
-	var line2 = new THREE.Line( geometry2, material );
-	scene.add( line2 );
+	// var line2 = new THREE.Line( geometry2, material );
+	// scene.add( line2 );
 
 	new Promise(function(resolve, reject) {
 
 		/* Load the car model! */
 		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-			object.scale.set(0.25, 0.25, 0.25)
+			object.scale.set(0.25, 0.5, 0.25)
 			object.position.z = -0.1;
 			object.position.y = 13;
 			object.position.x = 13;
@@ -105,7 +106,7 @@ function createScene(scene, camera, realScene, looper) {
 			/* Load the car model! */
 			OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-				object.scale.set(0.25, 0.25, 0.25)
+				object.scale.set(0.25, 0.5, 0.25)
 				object.position.z = -0.1;
 				object.position.y = 0;
 				object.position.x = 0;
@@ -158,7 +159,7 @@ function createScene(scene, camera, realScene, looper) {
 
 			TextureLoader.load(
 				// resource URL
-				'texture/parkinglot.png',
+				'texture/parkinglot.jpg',
 				// Function when resource is loaded
 				function ( texture ) {
 					resolve(texture);
@@ -205,7 +206,7 @@ function createScene(scene, camera, realScene, looper) {
 				// Function when resource is loaded
 				function ( texture ) {
 
-					var material = new THREE.MeshLambertMaterial( {
+					var material = new THREE.MeshBasicMaterial( {
 						map: texture,
 						shininess: 0,
 						specular: 0xAAAAAA,
@@ -224,6 +225,54 @@ function createScene(scene, camera, realScene, looper) {
 
 
 					resolve(texture);
+				}
+			);
+
+		});
+	}).then(function() {
+		return new Promise(function(resolve, reject) {
+
+			TextureLoader.load(
+				// resource URL
+				'texture/shadow.png',
+				// Function when resource is loaded
+				function ( texture ) {
+
+					var material = new THREE.MeshBasicMaterial( {
+						map: texture,
+						alpha: 0.5,
+						transparent: true
+					 } );
+
+					shadow = new THREE.Mesh(
+						new THREE.PlaneGeometry(20, 20),
+						material
+					);
+					shadow.rotation.x = -Math.PI/2;
+					shadow.rotation.z = Math.PI/2;
+					shadow.position.y = 5;
+					shadow.position.z = 5;
+					shadow.scale.set(1/0.25, 1/0.5, 1/0.25);
+
+					car.add(shadow);
+
+					for (var i in cars) {
+						var cari = cars[i];
+
+						shadow = new THREE.Mesh(
+							new THREE.PlaneGeometry(20, 20),
+							material
+						);
+						shadow.rotation.x = -Math.PI/2;
+						shadow.rotation.z = Math.PI/2;
+						shadow.position.y = 5;
+						shadow.position.z = 5;
+						shadow.scale.set(1/0.25, 1/0.5, 1/0.25);
+
+						cari.add(shadow);
+					}
+
+					resolve();
 				}
 			);
 
@@ -406,7 +455,7 @@ function createScene(scene, camera, realScene, looper) {
 
 			/* Ray Tracing */
 			warning.visible = false;
-			var colRes = testCollisionObjects(car, cars[0], geometry, geometry2);
+			var colRes = testCollisionObjects(car, cars[0]);
 			if (colRes.collided) {
 				warning.position.setX(colRes.a.offset.x + colRes.overlapN.x*5*1);
 				warning.position.setY(colRes.a.offset.y + colRes.overlapN.y*5*1);
