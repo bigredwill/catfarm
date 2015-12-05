@@ -53,6 +53,28 @@ function createScene(scene, camera, realScene, looper) {
 
 		} );
 
+	}).then(function() {
+
+		/* Load the car model! */
+		OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
+
+			object.scale.set(0.25, 0.5, 0.25)
+			object.position.z = -0.1;
+			object.position.y = 23;
+			object.position.x = 23;
+
+			object.rotation.x = Math.PI/2;
+
+			scene.add( object );
+			console.log("hey");
+
+			object.castShadow = true;
+			object.receiveShadow = true;
+
+			resolve();
+
+		} );
+
 
 	}).then(function() {
 		return new Promise(function(resolve, reject) {
