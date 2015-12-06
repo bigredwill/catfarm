@@ -309,7 +309,7 @@ function createScene(scene, camera, realScene, looper) {
 						warnings[i] = new THREE.Sprite(
 							material
 						);
-						warnings[i].position.z = 5;
+						warnings[i].position.z = 0.5;
 						warnings[i].scale.set(10,10,10);
 
 						scene.add(warnings[i]);
@@ -416,7 +416,7 @@ function createScene(scene, camera, realScene, looper) {
 						var sign = new THREE.Sprite(
 							material
 						);
-						sign.position.z = 5;
+						sign.position.z = 0.5;
 						sign.scale.set(10,10,10);
 
 						scene.add(sign);
