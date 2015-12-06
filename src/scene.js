@@ -74,7 +74,7 @@ function createScene(scene, camera, realScene, looper) {
 		for (var i in warnings) {
 			var warning = warnings[i];
 			warning.visible = false;
-			warning.rotation.copy(camera.rotation);
+			// warning.rotation.copy(camera.rotation);
 		}
 		currentWarningIndex = 0;
 	}
@@ -297,18 +297,20 @@ function createScene(scene, camera, realScene, looper) {
 
 					var geometry = new THREE.PlaneGeometry(10, 10);
 
-					var material = new THREE.MeshBasicMaterial( {
+					var material = new THREE.SpriteMaterial( {
 						map: texture,
 						alpha: 0.5,
 						transparent: true
 					 } );
+					material.depthWrite = false;
+					material.depthTest = false;
 
 					for (var i = 0; i < 10; i++) {
-						warnings[i] = new THREE.Mesh(
-							geometry,
+						warnings[i] = new THREE.Sprite(
 							material
 						);
 						warnings[i].position.z = 5;
+						warnings[i].scale.set(10,10,10);
 
 						scene.add(warnings[i]);
 					}
@@ -398,21 +400,24 @@ function createScene(scene, camera, realScene, looper) {
 				// Function when resource is loaded
 				function ( texture ) {
 
-					var material = new THREE.MeshBasicMaterial( {
+					var material = new THREE.SpriteMaterial( {
 						map: texture,
 						alpha: 0.5,
 						transparent: true
 					 } );
+					material.depthWrite = false;
+					material.depthTest = false;
 
 
 					for (var i in pedestrians) {
 						var pedestriani = pedestrians[i];
 
-						sign = new THREE.Mesh(
-							new THREE.PlaneGeometry(10, 10),
+
+						var sign = new THREE.Sprite(
 							material
 						);
 						sign.position.z = 5;
+						sign.scale.set(10,10,10);
 
 						scene.add(sign);
 
@@ -630,7 +635,7 @@ function createScene(scene, camera, realScene, looper) {
 
 			for (var i in pedestrians) {
 				var pedestriani = pedestrians[i];
-				pedestriani.sign.rotation.copy(camera.rotation);
+				// pedestriani.sign.rotation.copy(camera.rotation);
 				pedestriani.sign.position.x = pedestriani.position.x;
 				pedestriani.sign.position.y = pedestriani.position.y;
 			}
