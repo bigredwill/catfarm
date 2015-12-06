@@ -21,6 +21,21 @@ function viewInput(input) {
 	// }
 };
 
+var panning = false;
+var panX = 0;
+var panY = 0;
+function panner(dx, dy) {
+	panning = true;
+	panX = dx;
+	panY = dy;
+}
+
+function panStop() {
+	panning = false;
+	panX = 0;
+	panY = 0;
+}
+
 function createScene(scene, camera, realScene, looper) {
 
 	var cars = [];
@@ -532,9 +547,11 @@ function createScene(scene, camera, realScene, looper) {
 			car.rotation.y = carHeading + Math.PI/2 + Math.PI;
 
 			/* Camera Control */
+			var forward = new THREE.Vector3(-panX, 0, -panY);
+			forward.applyEuler(car.rotation);
 
 			var camPos = new THREE.Vector2(camera.position.x, camera.position.y);
-			camPos.lerp(new THREE.Vector2(car.position.x, car.position.y), 0.25);
+			camPos.lerp(new THREE.Vector2(car.position.x + forward.x, car.position.y + forward.y), 0.25);
 
 			var cameraQuat = new THREE.Quaternion();
 			cameraQuat.setFromEuler(new THREE.Euler(0, 0, car.rotation.y));

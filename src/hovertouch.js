@@ -45,6 +45,8 @@ var dispatchTouchEvent = function(type, x, y) {
 
 	} else if (type=="touchend") {
 
+		panStop();
+
 		//touch ended, we need lastX and lastY
 		// console.log("touchend", lastX, lastY);
 
@@ -107,6 +109,7 @@ var dispatchTouchEvent = function(type, x, y) {
 				dY = -1 * (((y-hY)/hY));
 			}
 		
+			panner(dX, dY);
 			// console.log("pan ",dX, dY);
 			// console.log(x, y);
 		}
