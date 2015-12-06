@@ -47,20 +47,13 @@ function createScene(scene, camera, realScene, looper) {
 	// var ambient = new THREE.AmbientLight( 0x333333 );
 	// scene.add( ambient );
 
-	var directionalLight = new THREE.DirectionalLight( 0xcccccc, 0.15 );
-	directionalLight.position.set( 0, 0, 1.5 ).normalize();
-	directionalLight.castShadow = true;
+	// var directionalLight = new THREE.DirectionalLight( 0xcccccc, 0.15 );
+	// directionalLight.position.set( 0, 0, 1.5 ).normalize();
+	// realScene.add( directionalLight );
 
-	directionalLight.shadowCameraNear = 1200;
-	directionalLight.shadowCameraFar = 2500;
-	directionalLight.shadowCameraFov = 50;
-
-	directionalLight.shadowBias = 0.0001;
-
-	directionalLight.shadowMapWidth = 2048;
-	directionalLight.shadowMapHeight = 2048;
-
-	realScene.add( directionalLight );
+	var directionalLight2 = new THREE.DirectionalLight( 0xeeeeee, 5.5 );
+	directionalLight2.position.set( 1, 1, 0 ).normalize();
+	scene.add( directionalLight2 );
 
 	var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1.5 );
 	realScene.add(light);
