@@ -24,9 +24,10 @@ function viewInput(input) {
 function createScene(scene, camera, realScene, looper) {
 
 	var cars = [];
+	var pedestrians = [];
 	var car;
 	var shadow;
-	var warning;
+	var warnings = [];
 
 	// var ambient = new THREE.AmbientLight( 0x333333 );
 	// scene.add( ambient );
@@ -53,27 +54,34 @@ function createScene(scene, camera, realScene, looper) {
 		color: 0x0000ff
 	});
 
-	// var geometry = new THREE.Geometry();
-	// geometry.vertices.push(
-	// 	new THREE.Vector3( -10, 0, 1 ),
-	// 	new THREE.Vector3( 0, 10, 1 ),
-	// 	new THREE.Vector3( 10, 0, 1 ),
-	// 	new THREE.Vector3( 10, 10, 1 )
-	// );
+	var currentWarningIndex = 0;
+	function clearWarnings() {
+		for (var i in warnings) {
+			var warning = warnings[i];
+			warning.visible = false;
+			warning.rotation.copy(camera.rotation);
+		}
+		currentWarningIndex = 0;
+	}
 
-	// var line = new THREE.Line( geometry, material );
-	// scene.add( line );
+	function showWarning(x, y) {
+		if (currentWarningIndex > warnings.length) {
+			return;
+		}
 
-	// var geometry2 = new THREE.Geometry();
-	// geometry2.vertices.push(
-	// 	new THREE.Vector3( -10, 0, 1 ),
-	// 	new THREE.Vector3( 0, 10, 1 ),
-	// 	new THREE.Vector3( 10, 0, 1 ),
-	// 	new THREE.Vector3( 10, 10, 1 )
-	// );
+		var warning = warnings[currentWarningIndex]
 
-	// var line2 = new THREE.Line( geometry2, material );
-	// scene.add( line2 );
+		if (!warning) {
+			return;
+		}
+
+		warning.visible = true;
+
+		warning.position.setX(x);
+		warning.position.setY(y);
+
+		currentWarningIndex++;
+	}
 
 	new Promise(function(resolve, reject) {
 
@@ -91,8 +99,8 @@ function createScene(scene, camera, realScene, looper) {
 
 			object.castShadow = true;
 			object.receiveShadow = true;
-			object.collision = new SAT.Box(new SAT.Vector(0,0), 10, 20).toPolygon();
-			object.collision.offset = new SAT.Vector(-5, -10);
+			object.collision = new SAT.Box(new SAT.Vector(0,0), 8, 16).toPolygon();
+			object.collision.offset = new SAT.Vector(-4, -8);
 
 			car = object;
 
@@ -102,58 +110,124 @@ function createScene(scene, camera, realScene, looper) {
 
 	}).then(function() {
 
-		return new Promise(function(resolve, reject) {
-			/* Load the car model! */
-			OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
+		var promises = [];
+		for (var i = 0; i < 4; i++) {
+			promises.push(new Promise(function(resolve, reject) {
+				/* Load the car model! */
+				OBJMTLLoader.load( './models/mustang impala.obj', './models/mustang impala.mtl', function ( object ) {
 
-				object.scale.set(0.25, 0.5, 0.25)
-				object.position.z = -0.1;
-				object.position.y = 0;
-				object.position.x = 0;
+					object.scale.set(0.25, 0.5, 0.25)
+					object.position.z = -0.1;
+					object.position.y = 0;
+					object.position.x = 0;
 
-				object.rotation.x = Math.PI/2;
+					object.rotation.x = Math.PI/2;
 
-				scene.add( object );
+					scene.add( object );
 
-				object.castShadow = true;
-				object.receiveShadow = true;
-				object.collision = new SAT.Box(new SAT.Vector(0,0), 7, 15).toPolygon();
-				object.collision.offset = new SAT.Vector(-3.5, -7.5);
+					object.castShadow = true;
+					object.receiveShadow = true;
+					object.collision = new SAT.Box(new SAT.Vector(0,0), 9, 15).toPolygon();
+					object.collision.offset = new SAT.Vector(-4.5, -7.5);
 
-				cars.push(object);
+					cars.push(object);
 
-				resolve();
+					resolve();
 
-			} );
-		});
+				} );
+			}));
+		}
+
+		return Promise.all(promises);
 
 	}).then(function() {
 
+		cars[1].position.x = 10;
+		cars[2].position.x = 30;
+		cars[3].position.x = -20;
+
+	}).then(function() {
+
+		/* Load a bunch of wills.. */
+		var promises = [];
+		for (var i = 0; i < 5; i++) {
+			promises.push(new Promise(function(resolve, reject) {
+
+				OBJMTLLoader.load( './models/will.obj', './models/will.mtl', function ( object ) {
+
+					object.scale.set(0.5, 0.5, 0.5);
+					object.position.z = -0.1;
+					object.position.y = 10;
+					object.position.x = 10;
+
+					object.rotation.x = Math.PI/2;
+
+					scene.add( object );
+
+					object.castShadow = true;
+					object.receiveShadow = true;
+					object.collision = new SAT.Box(new SAT.Vector(0,0), 6, 6).toPolygon();
+					object.collision.offset = new SAT.Vector(-3, -3);
+
+					pedestrians.push(object);
+
+					resolve();
+
+				} );
+			}));
+		}
+
+		return Promise.all(promises);
+	}).then(function() {
 		return new Promise(function(resolve, reject) {
-			/* Load the car model! */
-			OBJMTLLoader.load( './models/will.obj', './models/will.mtl', function ( object ) {
 
-				object.scale.set(0.5, 0.5, 0.5);
-				object.position.z = -0.1;
-				object.position.y = 10;
-				object.position.x = 10;
+			TextureLoader.load(
+				// resource URL
+				'texture/cement.png',
+				// Function when resource is loaded
+				function ( texture ) {
 
-				object.rotation.x = Math.PI/2;
+					var material = new THREE.MeshLambertMaterial( {
+						map: texture,
+						shininess: 0,
+						specular: 0xAAAAAA,
+						emissive: 0x555555,
+					 } );
 
-				scene.add( object );
+					var block = new THREE.Mesh(
+						new THREE.BoxGeometry(80, 10, 10),
+						material
+					);
+					block.position.y = 45;
 
-				object.castShadow = true;
-				object.receiveShadow = true;
-				object.collision = new SAT.Box(new SAT.Vector(0,0), 7, 15).toPolygon();
-				object.collision.offset = new SAT.Vector(-3.5, -7.5);
-				// object.material.emissive = 0xffffff;
-				// object.material.shininess = 0;
+					var block2 = new THREE.Mesh(
+						new THREE.BoxGeometry(80, 10, 10),
+						material
+					);
+					block2.position.y = -45;
 
-				resolve();
+					var block3 = new THREE.Mesh(
+						new THREE.BoxGeometry(10, 100, 10),
+						material
+					);
+					block3.position.x = 45;
 
-			} );
+					var block4 = new THREE.Mesh(
+						new THREE.BoxGeometry(10, 100, 10),
+						material
+					);
+					block4.position.x = -45;
+
+					scene.add(block);
+					scene.add(block2);
+					scene.add(block3);
+					scene.add(block4);
+
+					resolve(texture);
+				}
+			);
+
 		});
-
 	}).then(function() {
 		return new Promise(function(resolve, reject) {
 
@@ -166,7 +240,7 @@ function createScene(scene, camera, realScene, looper) {
 				}
 			);
 
-		})
+		});
 	}).then(function(texture) {
 		return new Promise(function(resolve, reject) {
 
@@ -206,25 +280,25 @@ function createScene(scene, camera, realScene, looper) {
 				// Function when resource is loaded
 				function ( texture ) {
 
+					var geometry = new THREE.PlaneGeometry(10, 10);
+
 					var material = new THREE.MeshBasicMaterial( {
 						map: texture,
-						shininess: 0,
-						specular: 0xAAAAAA,
-						emissive: 0x555555,
 						alpha: 0.5,
 						transparent: true
 					 } );
 
-					warning = new THREE.Mesh(
-						new THREE.PlaneGeometry(10, 10),
-						material
-					);
-					warning.position.z = 5;
+					for (var i = 0; i < 10; i++) {
+						warnings[i] = new THREE.Mesh(
+							geometry,
+							material
+						);
+						warnings[i].position.z = 5;
 
-					scene.add(warning);
+						scene.add(warnings[i]);
+					}
 
-
-					resolve(texture);
+					resolve();
 				}
 			);
 
@@ -238,14 +312,16 @@ function createScene(scene, camera, realScene, looper) {
 				// Function when resource is loaded
 				function ( texture ) {
 
+					var bigGeo = new THREE.PlaneGeometry(20, 20);
+
 					var material = new THREE.MeshBasicMaterial( {
 						map: texture,
 						alpha: 0.5,
 						transparent: true
 					 } );
 
-					shadow = new THREE.Mesh(
-						new THREE.PlaneGeometry(20, 20),
+					var shadow = new THREE.Mesh(
+						bigGeo,
 						material
 					);
 					shadow.rotation.x = -Math.PI/2;
@@ -259,8 +335,8 @@ function createScene(scene, camera, realScene, looper) {
 					for (var i in cars) {
 						var cari = cars[i];
 
-						shadow = new THREE.Mesh(
-							new THREE.PlaneGeometry(20, 20),
+						var shadow = new THREE.Mesh(
+							bigGeo,
 							material
 						);
 						shadow.rotation.x = -Math.PI/2;
@@ -270,6 +346,62 @@ function createScene(scene, camera, realScene, looper) {
 						shadow.scale.set(1/0.25, 1/0.5, 1/0.25);
 
 						cari.add(shadow);
+					}
+
+					var smallGeo = new THREE.PlaneGeometry(5, 5);
+
+					for (var i in pedestrians) {
+						var pedestriani = pedestrians[i];
+
+						var shadow = new THREE.Mesh(
+							smallGeo,
+							material
+						);
+
+						shadow.rotation.x = -Math.PI/2;
+						shadow.rotation.z = Math.PI/2;
+						shadow.position.y = 1;
+						shadow.position.z = 0;
+						shadow.scale.set(1, 1, 1);						
+
+						pedestriani.i = Math.random() * 1000;
+
+						pedestriani.add(shadow);
+					}
+
+					resolve();
+				}
+			);
+
+		});
+	}).then(function() {
+		return new Promise(function(resolve, reject) {
+
+			TextureLoader.load(
+				// resource URL
+				'texture/pedestrian.png',
+				// Function when resource is loaded
+				function ( texture ) {
+
+					var material = new THREE.MeshBasicMaterial( {
+						map: texture,
+						alpha: 0.5,
+						transparent: true
+					 } );
+
+
+					for (var i in pedestrians) {
+						var pedestriani = pedestrians[i];
+
+						sign = new THREE.Mesh(
+							new THREE.PlaneGeometry(10, 10),
+							material
+						);
+						sign.position.z = 5;
+
+						scene.add(sign);
+
+						pedestriani.sign = sign;
 					}
 
 					resolve();
@@ -453,20 +585,51 @@ function createScene(scene, camera, realScene, looper) {
 
 			// console.log(car.position.x, car.position.y);
 
-			/* Ray Tracing */
-			warning.visible = false;
-			var colRes = testCollisionObjects(car, cars[0]);
-			if (colRes.collided) {
-				warning.position.setX(colRes.a.offset.x + colRes.overlapN.x*5*1);
-				warning.position.setY(colRes.a.offset.y + colRes.overlapN.y*5*1);
-				// warning.position.setX(colRes.a.pos.x);
-				// warning.position.setY(colRes.a.pos.y);
-				// console.log("hey", colRes.a.overlapV.y);
-				if (Math.floor(time * 5) % 2) {
-					warning.visible = true;
+			clearWarnings();
+
+			if (Math.floor(time * 5) % 2) {
+
+				for (var i in cars) {
+					var cari = cars[i];
+
+					var colRes = testCollisionObjects(car, cari);
+					if (colRes.collided) {
+						showWarning(colRes.a.offset.x + colRes.overlapN.x*5, colRes.a.offset.y + colRes.overlapN.y*5);
+					}
 				}
+
+				for (var i in pedestrians) {
+					var pedestriani = pedestrians[i];
+
+
+					var colRes = testCollisionObjects(car, pedestriani);
+					if (colRes.collided) {
+						// showWarning(colRes.a.offset.x + colRes.overlapN.x*5, colRes.a.offset.y + colRes.overlapN.y*5);
+						showWarning(colRes.b.offset.x, colRes.b.offset.y);
+					}
+				}
+
 			}
-			warning.rotation.copy(camera.rotation);
+
+			for (var i in pedestrians) {
+				var pedestriani = pedestrians[i];
+				pedestriani.sign.rotation.copy(camera.rotation);
+				pedestriani.sign.position.x = pedestriani.position.x;
+				pedestriani.sign.position.y = pedestriani.position.y;
+			}
+
+			for (var i = 0; i < pedestrians.length-1; i++) {
+				var pedestriani = pedestrians[i];
+
+				pedestriani.position.x += Math.cos(pedestriani.rotation.y) * delta * 5;
+				pedestriani.position.y += Math.sin(pedestriani.rotation.y) * delta * 5;
+
+				pedestriani.position.x = Math.max(Math.min(40, pedestriani.position.x), -40);
+				pedestriani.position.y = Math.max(Math.min(40, pedestriani.position.y), -40);
+
+				pedestriani.rotation.y += Math.cos(time/1000 * Math.cos(pedestriani.i * time) * pedestriani.i * 100) * Math.PI / 20;
+			}
+
 
 		});
 
