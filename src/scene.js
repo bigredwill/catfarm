@@ -547,7 +547,7 @@ function createScene(scene, camera, realScene, looper) {
 			car.rotation.y = carHeading + Math.PI/2 + Math.PI;
 
 			/* Camera Control */
-			var forward = new THREE.Vector3(panX * 100, 0, panY * 100);
+			var forward = new THREE.Vector3(panX * 10, 0, panY * 10);
 			forward.applyEuler(car.rotation);
 
 			var camPos = new THREE.Vector2(camera.position.x, camera.position.y);
