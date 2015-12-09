@@ -18,7 +18,8 @@
   "homepage": "https://github.com/bigredwill/catfarm#readme",
   "dependencies": {
     "grunt": "^0.4.5",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "socket.io": "^1.3.7"
   },
   "devDependencies": {
     "express": "^4.13.3",
